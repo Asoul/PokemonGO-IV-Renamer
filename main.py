@@ -11,10 +11,6 @@ from pgoapi import PGoApi
 from random import randint
 from terminaltables import AsciiTable
 
-class Colors:
-    OKGREEN = '\033[92m'
-    ENDC = '\033[0m'
-
 class Renamer(object):
     """Main renamer class object"""
 
@@ -31,7 +27,6 @@ class Renamer(object):
         parser.add_argument("-a", "--auth_service")
         parser.add_argument("-u", "--username")
         parser.add_argument("-p", "--password")
-        parser.add_argument("--clear", action='store_true', default=False)
         parser.add_argument("-lo", "--list_only", action='store_true', default=False)
         parser.add_argument("--format", default="%ivsum, %atk/%def/%sta")
         parser.add_argument("-l", "--locale", default="en")
@@ -41,8 +36,6 @@ class Renamer(object):
 
         self.config = parser.parse_args()
         self.config.overwrite = True
-        #self.config.skip_favorite = True
-        #self.config.only_favorite = False
 
     def start(self):
         """Start renamer"""
@@ -62,8 +55,6 @@ class Renamer(object):
 
         if self.config.list_only:
             pass
-        elif self.config.clear:
-            self.clear_pokemon()
         else:
             self.rename_pokemon()
 
@@ -151,8 +142,6 @@ class Renamer(object):
                     pokemon['stamina']
                 ]
                 table_data.append(row_data)
-                # if pokemon.get('best_iv', False) and len(group) > 1:
-                #     row_data = [Colors.OKGREEN + str(cell) + Colors.ENDC for cell in row_data]
         table = AsciiTable(table_data)
         table.justify_columns[0] = 'left'
         table.justify_columns[1] = 'right'
@@ -213,32 +202,6 @@ class Renamer(object):
 
         print str(renamed) + " Pokemon renamed."
         print str(already_renamed) + " Pokemon already renamed."
-
-    def clear_pokemon(self):
-        """Resets all Pokemon names to the original"""
-        cleared = 0
-
-        for pokemon in self.pokemon:
-            num = int(pokemon['num'])
-            name_original = self.pokemon_list[str(num)]
-
-            if pokemon['nickname'] != "NONE" and pokemon['nickname'] != name_original:
-                self.api.nickname_pokemon(pokemon_id=pokemon['id'], nickname=name_original)
-                response = self.api.call()
-
-                result = response['responses']['NICKNAME_POKEMON']['result']
-
-                if result == 1:
-                    print "Resetted " + pokemon['nickname'] +  " to " + name_original
-                else:
-                    print "Something went wrong with resetting " + pokemon['nickname'] + " to " + name_original + ". Error code: " + str(result)
-
-                random_delay = randint(self.config.min_delay, self.config.max_delay)
-                time.sleep(random_delay)
-
-                cleared += 1
-
-        print "Cleared " + str(cleared) + " names"
 
 if __name__ == '__main__':
     Renamer().start()
