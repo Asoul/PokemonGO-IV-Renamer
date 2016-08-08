@@ -35,28 +35,6 @@ class Renamer(object):
         parser.add_argument("--iv", type=int, default=0)
 
         self.config = parser.parse_args()
-        self.config.overwrite = True
-
-    def start(self):
-        """Start renamer"""
-        print "Start renamer"
-
-        self.init_config()
-
-        try:
-            self.pokemon_list = json.load(open('locales/pokemon.' + self.config.locale + '.json'))
-        except IOError:
-            print "The selected language is currently not supported"
-            exit(0)
-
-        self.setup_api()
-        self.get_pokemon()
-        self.print_pokemon()
-
-        if self.config.list_only:
-            pass
-        else:
-            self.rename_pokemon()
 
     def setup_api(self):
         """Prepare and sign in to API"""
@@ -179,7 +157,6 @@ class Renamer(object):
 
             if (pokemon['nickname'] == "NONE" \
                 or pokemon['nickname'] == pokemon_name \
-                or (pokemon['nickname'] != name and self.config.overwrite)) \
                 and iv_percent >= self.config.iv:
 
                 self.api.nickname_pokemon(pokemon_id=pokemon['id'], nickname=name)
@@ -204,4 +181,22 @@ class Renamer(object):
         print str(already_renamed) + " Pokemon already renamed."
 
 if __name__ == '__main__':
-    Renamer().start()
+    renamer = Renamer()
+
+    print "Start renamer"
+    renamer.init_config()
+
+    try:
+        renamer.pokemon_list = json.load(open('locales/pokemon.' + renamer.config.locale + '.json'))
+    except IOError:
+        print "The selected language is currently not supported"
+        exit(0)
+
+    renamer.setup_api()
+
+    while True:
+        renamer.get_pokemon()
+        # renamer.print_pokemon()
+        renamer.rename_pokemon()
+        print "Sleep 10 sec to continue"
+        time.sleep(10)
