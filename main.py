@@ -157,7 +157,7 @@ class Renamer(object):
 
             if (pokemon['nickname'] == "NONE" \
                 or pokemon['nickname'] == pokemon_name \
-                and iv_percent >= self.config.iv:
+                and iv_percent >= self.config.iv):
 
                 self.api.nickname_pokemon(pokemon_id=pokemon['id'], nickname=name)
                 response = self.api.call()
