@@ -8,6 +8,7 @@ import time
 import argparse
 from itertools import groupby
 from pgoapi import PGoApi
+from pgoapi.exceptions import NotLoggedInException
 from random import randint
 from terminaltables import AsciiTable
 
@@ -194,9 +195,16 @@ if __name__ == '__main__':
 
     renamer.setup_api()
 
+    counter = 0
     while True:
-        renamer.get_pokemon()
-        # renamer.print_pokemon()
-        renamer.rename_pokemon()
-        print "Sleep 10 sec to continue"
-        time.sleep(10)
+        try:
+            renamer.get_pokemon()
+            # renamer.print_pokemon()
+            renamer.rename_pokemon()
+        except NotLoggedInException:
+            print counter, "Not login, reset api"
+            renamer.setup_api()
+        finally:
+            print counter, "Sleep 20 sec to continue"
+            time.sleep(20)
+            counter += 1
