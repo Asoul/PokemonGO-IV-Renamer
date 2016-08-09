@@ -44,14 +44,14 @@ class Renamer(object):
         if not self.api.login(self.config.auth_service,
                               str(self.config.username),
                               str(self.config.password)):
-            print "Login error"
+            print("Login error")
             exit(0)
 
-        print "Signed in"
+        print("Signed in")
 
     def get_pokemon(self):
         """Fetch Pokemon from server and store in array"""
-        print "Getting Pokemon list"
+        print("Getting Pokemon list")
         self.api.get_inventory()
         response_dict = self.api.call()
 
@@ -131,7 +131,7 @@ class Renamer(object):
         table.justify_columns[3] = 'right'
         table.justify_columns[4] = 'right'
         table.justify_columns[5] = 'right'
-        print table.table
+        print(table.table)
 
     def rename_pokemon(self):
         """Renames Pokemon according to configuration"""
@@ -169,9 +169,9 @@ class Renamer(object):
                 result = response['responses']['NICKNAME_POKEMON']['result']
 
                 if result == 1:
-                    print "Renaming " + pokemon_name.replace(u'\N{MALE SIGN}', '(M)').replace(u'\N{FEMALE SIGN}', '(F)') + " (CP " + str(pokemon['cp'])  + ") to " + name
+                    print("Renaming " + pokemon_name.replace(u'\N{MALE SIGN}', '(M)').replace(u'\N{FEMALE SIGN}', '(F)') + " (CP " + str(pokemon['cp'])  + ") to " + name)
                 else:
-                    print "Something went wrong with renaming " + pokemon_name.replace(u'\N{MALE SIGN}', '(M)').replace(u'\N{FEMALE SIGN}', '(F)') + " (CP " + str(pokemon['cp'])  + ") to " + name + ". Error code: " + str(result)
+                    print("Something went wrong with renaming " + pokemon_name.replace(u'\N{MALE SIGN}', '(M)').replace(u'\N{FEMALE SIGN}', '(F)') + " (CP " + str(pokemon['cp'])  + ") to " + name + ". Error code: " + str(result))
 
                 random_delay = randint(self.config.min_delay, self.config.max_delay)
                 time.sleep(random_delay)
@@ -181,19 +181,19 @@ class Renamer(object):
             else:
                 already_renamed += 1
 
-        print str(renamed) + " Pokemon renamed."
-        print str(already_renamed) + " Pokemon already renamed."
+        print(str(renamed) + " Pokemon renamed.")
+        print(str(already_renamed) + " Pokemon already renamed.")
 
 if __name__ == '__main__':
     renamer = Renamer()
 
-    print "Start renamer"
+    print("Start renamer")
     renamer.init_config()
 
     try:
         renamer.pokemon_list = json.load(open('locales/pokemon.' + renamer.config.locale + '.json'))
     except IOError:
-        print "The selected language is currently not supported"
+        print("The selected language is currently not supported")
         exit(0)
 
     renamer.setup_api()
@@ -205,12 +205,12 @@ if __name__ == '__main__':
             # renamer.print_pokemon()
             renamer.rename_pokemon()
         except NotLoggedInException:
-            print counter, "Not login, reset api"
+            print(counter, "Not login, reset api")
             renamer.setup_api()
         except:
-            print 'Unknown error occur, sleep additional 600 seconds'
+            print('Unknown error occur, sleep additional 600 seconds')
             time.sleep(600)
         finally:
-            print counter, "Sleep 60 sec to continue"
+            print(counter, "Sleep 60 sec to continue")
             time.sleep(60)
             counter += 1
