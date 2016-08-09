@@ -64,6 +64,7 @@ class Renamer(object):
                                            ['inventory_delta'] \
                                            ['inventory_items']
         except KeyError:
+            print("Get pokemo list error")
             return
 
         for item in inventory_items:
@@ -219,8 +220,8 @@ if __name__ == '__main__':
                 pass
 
             print('Unknown error occur, sleep additional 600 seconds')
-            time.sleep(600)
+            time.sleep(600 + randint(renamer.config.min_delay, renamer.config.max_delay))
         finally:
             print(counter, "Sleep 60 sec to continue")
-            time.sleep(60)
+            time.sleep(60 + randint(renamer.config.min_delay, renamer.config.max_delay))
             counter += 1
