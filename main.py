@@ -3,6 +3,8 @@
 
 """This module renames Pokemon according to user configuration"""
 
+import sys
+import traceback
 import json
 import time
 import argparse
@@ -66,7 +68,7 @@ class Renamer(object):
 
         for item in inventory_items:
             try:
-                reduce(dict.__getitem__, ["inventory_item_data", "pokemon_data"], item)
+                item.get('inventory_item_data').get('pokemon_data')
             except KeyError:
                 pass
             else:
@@ -207,7 +209,15 @@ if __name__ == '__main__':
         except NotLoggedInException:
             print(counter, "Not login, reset api")
             renamer.setup_api()
-        except:
+        except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            error_strings = traceback.format_exception(exc_type, exc_value,
+                                                       exc_traceback, limit=100)
+            try:
+                print('\n'.join(error_strings))
+            except:
+                pass
+
             print('Unknown error occur, sleep additional 600 seconds')
             time.sleep(600)
         finally:
