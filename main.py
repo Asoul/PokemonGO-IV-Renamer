@@ -15,6 +15,9 @@ from pgoapi.exceptions import NotLoggedInException
 from random import randint
 from terminaltables import AsciiTable
 
+class NoPokemoError(Exception):
+    pass
+
 class Renamer(object):
     """Main renamer class object"""
 
@@ -66,7 +69,19 @@ class Renamer(object):
                                            ['inventory_items']
         except KeyError:
             print("Get pokemo list error")
-            return
+            if not response_dict.get('responses'):
+                print('Error response_dict')
+                print(response_dict)
+            elif not response_dict.get('responses').get('GET_INVENTORY'):
+                print('Error responses')
+                print(response_dict.get('responses'))
+            elif not response_dict.get('responses').get('GET_INVENTORY').get('inventory_delta'):
+                print('Error GET_INVENTORY')
+                print(response_dict.get('responses').get('GET_INVENTORY'))
+            else:
+                print("Error inventory_delta")
+                print(response_dict.get('responses').get('GET_INVENTORY').get('inventory_delta'))
+            raise NoPokemoError("Cannot get Pokemo")
 
         for item in inventory_items:
             try:
@@ -207,7 +222,7 @@ if __name__ == '__main__':
             renamer.get_pokemon()
             # renamer.print_pokemon()
             renamer.rename_pokemon()
-        except NotLoggedInException:
+        except (NotLoggedInException, NoPokemoError):
             print("Not login, reset api")
             renamer.setup_api()
         except Exception as e:
