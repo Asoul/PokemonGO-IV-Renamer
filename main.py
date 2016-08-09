@@ -9,6 +9,7 @@ import json
 import time
 import argparse
 from itertools import groupby
+from datetime import datetime
 from pgoapi import PGoApi
 from pgoapi.exceptions import NotLoggedInException
 from random import randint
@@ -201,14 +202,13 @@ if __name__ == '__main__':
 
     renamer.setup_api()
 
-    counter = 0
     while True:
         try:
             renamer.get_pokemon()
             # renamer.print_pokemon()
             renamer.rename_pokemon()
         except NotLoggedInException:
-            print(counter, "Not login, reset api")
+            print("Not login, reset api")
             renamer.setup_api()
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -219,9 +219,11 @@ if __name__ == '__main__':
             except:
                 pass
 
-            print('Unknown error occur, sleep additional 600 seconds')
-            time.sleep(600 + randint(renamer.config.min_delay, renamer.config.max_delay))
+            sleep_time = 600 + randint(renamer.config.min_delay, renamer.config.max_delay)
+            print('Unknown error occur, sleep additional {} seconds'.format(sleep_time))
+            time.sleep(sleep_time)
         finally:
-            print(counter, "Sleep 60 sec to continue")
-            time.sleep(60 + randint(renamer.config.min_delay, renamer.config.max_delay))
-            counter += 1
+            timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+            sleep_time = 60 + randint(renamer.config.min_delay, renamer.config.max_delay)
+            print("[{}] Sleep {} sec to continue".format(timestamp, sleep_time))
+            time.sleep(sleep_time)
