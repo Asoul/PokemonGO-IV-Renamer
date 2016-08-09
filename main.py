@@ -56,10 +56,13 @@ class Renamer(object):
         response_dict = self.api.call()
 
         self.pokemon = []
-        inventory_items = response_dict['responses'] \
-                                       ['GET_INVENTORY'] \
-                                       ['inventory_delta'] \
-                                       ['inventory_items']
+        try:
+            inventory_items = response_dict['responses'] \
+                                           ['GET_INVENTORY'] \
+                                           ['inventory_delta'] \
+                                           ['inventory_items']
+        except KeyError:
+            return
 
         for item in inventory_items:
             try:
@@ -204,7 +207,10 @@ if __name__ == '__main__':
         except NotLoggedInException:
             print counter, "Not login, reset api"
             renamer.setup_api()
+        except:
+            print 'Unknown error occur, sleep additional 600 seconds'
+            time.sleep(600)
         finally:
-            print counter, "Sleep 20 sec to continue"
-            time.sleep(20)
+            print counter, "Sleep 60 sec to continue"
+            time.sleep(60)
             counter += 1
