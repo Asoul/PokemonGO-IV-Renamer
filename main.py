@@ -185,7 +185,11 @@ class Renamer(object):
                 self.api.nickname_pokemon(pokemon_id=pokemon['id'], nickname=name)
                 response = self.api.call()
 
-                result = response['responses']['NICKNAME_POKEMON']['result']
+                try:
+                    result = response['responses']['NICKNAME_POKEMON']['result']
+                except KeyError:
+                    print(response)
+                    raise NoPokemoError("Cannot get Pokemo nickname after setting")
 
                 if result == 1:
                     print("Renaming " + pokemon_name.replace(u'\N{MALE SIGN}', '(M)').replace(u'\N{FEMALE SIGN}', '(F)') + " (CP " + str(pokemon['cp'])  + ") to " + name)
